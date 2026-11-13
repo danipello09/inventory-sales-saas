@@ -33,6 +33,10 @@ npm-debug.log*
 *.pem
 *.key
 
+# Editors
+.vscode/
+.idea/
+
 # OS artifacts
 .DS_Store
 Thumbs.db
