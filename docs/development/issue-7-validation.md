@@ -71,5 +71,34 @@ La evidencia histórica #4–#6 permanece identificada por fecha.
 
 ## Publicación y pendientes
 
-Pendiente de commit, push, PR borrador y consulta de sus cinco jobs reales.
-No se hará merge, no se cerrará manualmente #7 y no se empezará #8.
+Commit inicial `07b4d16c39d957f53c1ac49a1759f8b7e13f23db`, publicado en
+`origin/docs/issue-7-onboarding`. Se creó el
+[PR #13](https://github.com/danipello09/inventory-sales-saas/pull/13), borrador contra
+main, vinculado al Issue #7 y compatible con las secciones del template existente.
+
+Se consultaron jobs/pasos y logs reales de
+[Quality checks #11](https://github.com/danipello09/inventory-sales-saas/actions/runs/43525073994),
+que terminó en **success**. Ningún paso falló ni fue omitido:
+
+| Job | Resultado remoto real |
+| --- | --- |
+| Django checks | success; Python 3.12.16, check/Ruff y 2 pruebas SQLite. |
+| React checks | success; Node 22.23.4/npm 10.9.9, npm ci/lint, 1 prueba y build de 29 módulos. |
+| PostgreSQL integration | success; migraciones, conexión postgresql a inventory_ci en PostgreSQL 17.12, sin drift y 2 pruebas. |
+| Docker Compose validation | success; modelo válido y cuatro servicios esperados. |
+| npm dependency audit | success por umbrales; 0 producción y 9 moderadas de desarrollo visibles. No se afirma remediación. |
+
+Se revisaron los nueve Markdown completos, el diff preparado y las rutas. El
+escaneo de marcadores de conflicto, patrones de tokens y valores secretos del
+`.env` local no encontró coincidencias en los cambios preparados. El índice no
+contiene código, configuración, dependencias, lockfiles o artefactos generados.
+`git diff --cached --check` pasó antes del commit.
+
+Un commit posterior añade esta evidencia; los checks de su HEAD se registran en
+la descripción del PR para no atribuirle una ejecución anterior. La revisión fue
+asistida por IA; falta revisión humana del contenido, alcance y cinco checks
+actuales antes del merge. No se promete soporte de seguridad ni canal privado
+habilitado; la guía explica qué hacer si esa función no está disponible.
+
+No se hizo merge, no se cerró manualmente #7, no se alteró protección de ramas
+y no se empezó #8. No se conocen bloqueos técnicos tras estas validaciones.
