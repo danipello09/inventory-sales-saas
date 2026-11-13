@@ -2,6 +2,10 @@
 
 This repository currently contains a minimal Django/DRF backend and React/TypeScript/Vite frontend. No commercial functionality has been implemented.
 
+For the integrated PostgreSQL and local email environment, follow
+[Docker Compose development](docker-compose.md). The commands below remain available
+for standalone development without Docker.
+
 ## Backend
 
 Use Python 3.12. On Windows, create the environment with `py -3.12 -m venv .venv`
@@ -46,7 +50,7 @@ remaining moderate development alerts, and the checks actually executed.
 
 ## Known gaps
 
-- Docker Compose and GitHub Actions are separate issues #5 and #6.
+- Docker Compose local services are provided by Issue #5. Further CI work belongs to Issue #6.
 - Django uses SQLite only for standalone smoke checks when DATABASE_HOST is unset; integrated development will use PostgreSQL.
 - Settings are intended for development smoke checks, not production deployment.
 - No login, catalog, stock or sales endpoints exist.

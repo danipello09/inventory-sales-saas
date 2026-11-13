@@ -79,3 +79,12 @@ REST_FRAMEWORK = {
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+
+# Local SMTP capture is opt-in; standalone runs never send real email by default.
+EMAIL_BACKEND = os.environ.get(
+    "DJANGO_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "127.0.0.1")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "1025"))
+EMAIL_TIMEOUT = 5
+DEFAULT_FROM_EMAIL = "Inventory SaaS Dev <no-reply@inventory.test>"
