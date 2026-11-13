@@ -94,6 +94,30 @@ aislamiento multiempresa ni preparación para producción.
 
 ## GitHub remoto y revisión final
 
-Pendiente de registrar después del primer commit/push y de crear el PR borrador.
-La validación actionlint anterior es local y no se presenta como ejecución remota.
-No se hará merge ni se cerrará el Issue #6.
+Commit inicial `3b1e7429cc616cf6ceca247c1e54b9f7ec0b2bc5`, push correcto a origin.
+[PR #12](https://github.com/danipello09/inventory-sales-saas/pull/12), borrador contra
+main, vinculado a #6. Primera ejecución real
+[Quality checks #7](https://github.com/danipello09/inventory-sales-saas/actions/runs/43522380465):
+los cinco jobs terminaron en `success`. Se consultaron pasos y logs reales:
+
+| Job | Resultado remoto inicial |
+| --- | --- |
+| Django checks | success; Python 3.12.16, check/Ruff y 2 pruebas. |
+| React checks | success; Node 22.23.4/npm 10.9.9, lint, 1 prueba y build. |
+| PostgreSQL integration | success; 18 migraciones, conexión `postgresql` a inventory_ci en 17.12, sin drift, 2 pruebas y limpieza de servicio/red. |
+| Docker Compose validation | success; configuración válida y los cuatro servicios esperados. |
+| npm dependency audit | success por umbrales; 0 producción y 9 moderadas de desarrollo visibles. |
+
+Los logs mostraron advertencias de runtime Node 20 obsoleto de las acciones
+heredadas. Se actualizaron checkout/setup-python/setup-node a v6 por SHA, con
+runtime Node 24 (la aplicación sigue en Node 22). También mostraron que defaults
+por job sustituyen el shell global: se declara `shell: bash` en cada bloque con
+working-directory para garantizar `-e -o pipefail`. Actionlint y diff-check se
+repitieron sin errores. La primera ejecución tuvo una carrera inocua al guardar
+cachés compartidas; otro job guardó la misma clave y todos los comandos pasaron.
+
+Pendiente de registrar la ejecución remota con esos ajustes antes de finalizar.
+Se revisaron los cinco archivos completos del índice, rutas utilizadas y ausencia
+de marcadores de conflicto/valores secretos locales. `git diff --check` y
+`git diff --cached --check` pasaron. No se añadieron archivos generados.
+No se hará merge ni se cerrará manualmente el Issue #6.

@@ -202,7 +202,9 @@ data is not treated as success.
 ## Security and CI concepts
 
 Actions use reviewed full commit SHAs, with release comments, rather than mutable
-major tags. Updating pins requires review. Checkout does not persist credentials;
+major tags. The pinned checkout/setup-python/setup-node v6 actions run on Node 24;
+this action runtime is separate from the application's configured Node 22.
+Updating pins requires review. Checkout does not persist credentials;
 the workflow has only `contents: read`. PR code runs through `pull_request`, with
 no personal tokens, deployment permissions, real secrets or production access.
 No PR title/body is interpolated into shell code. Django middleware, password
