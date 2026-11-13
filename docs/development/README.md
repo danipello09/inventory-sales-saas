@@ -48,9 +48,16 @@ resolved dependency tree and fails if it disagrees with `package.json`.
 See [the Issue #4 validation report](issue-4-validation.md) for audit findings,
 remaining moderate development alerts, and the checks actually executed.
 
+## Continuous integration
+
+[GitHub Actions quality checks](ci.md) documents the five independent CI jobs,
+local reproduction, PostgreSQL isolation, logs and dependency audit thresholds.
+See [Issue #6 validation](issue-6-validation.md) for actual local and remote results.
+
 ## Known gaps
 
-- Docker Compose local services are provided by Issue #5. Further CI work belongs to Issue #6.
+- Docker Compose local services are provided by Issue #5; Issue #6 validates their
+  configuration in CI without building or booting the complete development stack.
 - Django uses SQLite only for standalone smoke checks when DATABASE_HOST is unset; integrated development will use PostgreSQL.
 - Settings are intended for development smoke checks, not production deployment.
 - No login, catalog, stock or sales endpoints exist.
