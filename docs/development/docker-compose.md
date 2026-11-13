@@ -2,6 +2,10 @@
 
 This is a development environment, not a production deployment. It implements
 ADR-001/002/003/006 and TD-003 infrastructure without business functionality.
+Only the infrastructure portions are implemented; tenant isolation, authentication
+flows and invitation logic remain pending. For a first setup in PowerShell or
+Linux Bash, start with the [root quick start](../../README.md#quick-start-with-docker-compose).
+Read [security guidance](../../SECURITY.md) before sharing logs or changing exposure.
 
 ## Requirements and preparation
 
