@@ -23,8 +23,8 @@ Compose, código, workflow y ADR/TD; no se asumió integración de #7.
 | A: Inspección | Completada | refs/estado consultados; PR #13 conservado; ADR/TD revisados | [#13 existente](https://github.com/danipello09/inventory-sales-saas/pull/13) |
 | B: Issue #8 | Entregada para revisión; Fase 2 no cerrada | 32 comprobaciones de clon/Compose/DB/SMTP/persistencia; cinco jobs remotos success | [#14](https://github.com/danipello09/inventory-sales-saas/pull/14) |
 | C: Diseño Fase 3 | Entregado para revisión | Contrato detallado, JSON/enlaces comprobados, cinco jobs success | [#15](https://github.com/danipello09/inventory-sales-saas/pull/15) |
-| D: Backend inicial | Implementado y validado localmente | 52 tests SQLite, 52 PostgreSQL; 27 registros del verificador de DB/HTTP/guard | PR independiente de esta rama; enlace y checks finales en la descripción publicada |
-| E: Calidad | Gates locales aprobados; publicación final en curso al redactar | Ruff, check, drift, diff/rutas/secretos; CI del HEAD se consulta después del push | Un PR por etapa, sin diffs duplicados |
+| D: Backend inicial | Implementado, publicado y verificado en CI | 52 tests SQLite, 52 PostgreSQL; 27 registros DB/HTTP/guard | [#16](https://github.com/danipello09/inventory-sales-saas/pull/16) |
+| E: Calidad | Gates locales y cinco jobs de los tres PR aprobados | Ruff, check, drift, diff/rutas/secretos; runs #13/#14/#15 | PR #14/#15/#16 separados, sin diffs duplicados |
 
 ## Ramas, commits y archivos
 
@@ -36,8 +36,9 @@ Se crearon worktrees separados para no cambiar innecesariamente el checkout #7:
 - `docs/phase-3-identity-design`, desde el mismo main; commit `3ba5489`:
   `docs: specify identity and organization backend contract`. Solo añade
   docs/architecture/identity-organizations.md.
-- `feat/phase-3-identity-organizations`, desde el mismo main; commits funcionales
-  y de evidencia se identifican por SHA en su PR. Incluye apps accounts,
+- `feat/phase-3-identity-organizations`, desde el mismo main; commit funcional
+  `77dc8b2`: `feat: add session identity and scoped organization backend`. El commit
+  posterior solo registra evidencia y se identifica por SHA en su PR. Incluye apps accounts,
   organizations e identity; migraciones, tests, configuración de usuario/cookies,
   rutas API, verificador PostgreSQL y documentación propia.
 
@@ -97,9 +98,15 @@ borraron assertions ni se ocultaron errores. Véase [evidencia backend](identity
 CI de #14: [run #13](https://github.com/danipello09/inventory-sales-saas/actions/runs/43526691315),
 cinco jobs success. CI de #15:
 [run #14](https://github.com/danipello09/inventory-sales-saas/actions/runs/43527149814),
-cinco jobs success. El CI del backend se ejecutará/verificará tras el commit y
-se registrará en el PR; los runs anteriores no se le atribuyen. Frontend se ejecutó
-localmente en la revisión de Fase 2, no se repitió localmente en el slice backend.
+cinco jobs success. Backend:
+[run #15](https://github.com/danipello09/inventory-sales-saas/actions/runs/43529168981),
+cinco jobs success sobre 77dc8b2: Django con 52 tests (9.40 s), PostgreSQL 17.12 con
+52 tests (8.29 s), React con lint/1 test/build, Compose válido y auditoría con
+0 producción/9 moderadas de desarrollo. Se inspeccionaron pasos y logs reales.
+El último commit documental añade esta evidencia; sus checks se registran además
+en la descripción del PR tras ejecutarse, sin atribuirle un run anterior.
+Frontend se ejecutó localmente en la revisión de Fase 2 y remotamente en los tres
+PR; no se repitió localmente en el slice backend.
 
 ## Riesgos, bloqueos y trabajo pendiente
 

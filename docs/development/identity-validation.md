@@ -60,7 +60,20 @@ or fake the existing database. Rate limiting, email verification/recovery and
 production operational controls remain future work. Known npm moderate development
 findings are not remediated by this slice; no Python audit was added.
 
-CI job results for the latest implementation commit are recorded in the draft PR
-after real execution, distinct from the local PostgreSQL run. Frontend and workflow
-code are unchanged; the five remote jobs still execute their commands. No local
-frontend re-run is claimed for this slice (the earlier Phase 2 run did execute it).
+Implementation commit `77dc8b221394757979692b3db80939bccede0151` is published in
+[draft PR #16](https://github.com/danipello09/inventory-sales-saas/pull/16).
+[Quality checks #15](https://github.com/danipello09/inventory-sales-saas/actions/runs/43529168981)
+completed successfully; every job and step was inspected:
+
+| Remote job | Actual result |
+| --- | --- |
+| Django checks | success, Python 3.12.16, 52 passed in 9.40 s, check and Ruff passed. |
+| PostgreSQL integration | success, PostgreSQL 17.12 real connection, fresh migrations/no drift, 52 passed in 8.29 s. |
+| React checks | success, Node 22.23.4/npm 10.9.9, npm ci/lint, 1 test and build. |
+| Docker Compose validation | success, configuration and four expected services. |
+| npm dependency audit | success by thresholds, 0 production and 9 moderate development findings visible. |
+
+The follow-up documentation commit records this evidence. Its latest checks are
+also recorded in the PR description so a previous run is not attributed to a new
+HEAD. Frontend and workflow code are unchanged. No local frontend re-run is claimed
+for this slice (the earlier Phase 2 run did execute it). Human review remains pending.
