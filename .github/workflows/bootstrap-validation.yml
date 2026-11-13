@@ -1,46 +1,175 @@
-name: Bootstrap validation
+name: Quality checks
 
 on:
   pull_request:
     branches: [main]
   push:
-    branches: [chore/issue-4-monorepo-bootstrap]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  backend:
+  backend-quality:
     name: Django checks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_HOST: ''
+      EXPECT_DATABASE_VENDOR: sqlite
     defaults:
       run:
+        shell: bash
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: backend/requirements.txt
       - run: python -m pip install -r requirements.txt
       - run: python manage.py check
-      - run: python -m pytest -q
       - run: python -m ruff check .
+      - run: python -m pytest -q
 
-  frontend:
+  frontend-quality:
     name: React checks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
+        shell: bash
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run lint
       - run: npm test
       - run: npm run build
+
+  postgres-integration:
+    name: PostgreSQL integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend
+    env:
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: '5432'
+      POSTGRES_DB: inventory_ci
+      POSTGRES_USER: inventory_ci
+      POSTGRES_PASSWORD: ci-only-disposable-password
+      DJANGO_SECRET_KEY: ci-only-disposable-django-key-not-for-production
+      DJANGO_DEBUG: 'false'
+      EXPECT_DATABASE_VENDOR: postgresql
+    services:
+      postgres:
+        image: postgres:17.12-bookworm
+        env:
+          POSTGRES_DB: inventory_ci
+          POSTGRES_USER: inventory_ci
+          POSTGRES_PASSWORD: ci-only-disposable-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U inventory_ci -d inventory_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: python -m pip install -r requirements.txt
+      - name: Apply migrations to the isolated CI database
+        run: python manage.py migrate --noinput
+      - run: python manage.py check
+      - name: Verify a real PostgreSQL connection
+        run: >-
+          python manage.py shell -c
+          "from django.db import connection;
+          connection.ensure_connection();
+          assert connection.vendor == 'postgresql', connection.vendor;
+          cursor = connection.cursor();
+          cursor.execute('SELECT current_database(), version()');
+          print(connection.vendor, cursor.fetchone());
+          cursor.close()"
+      - name: Check migration drift
+        run: python manage.py makemigrations --check --dry-run
+      - name: Run tests against PostgreSQL (including a separate test database)
+        run: python -m pytest -q
+
+  compose-validation:
+    name: Docker Compose validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      POSTGRES_DB: inventory_ci
+      POSTGRES_USER: inventory_ci
+      POSTGRES_PASSWORD: ci-only-disposable-password
+      DJANGO_SECRET_KEY: ci-only-disposable-django-key-not-for-production
+      DJANGO_DEBUG: 'false'
+      BACKEND_PORT: '8000'
+      FRONTEND_PORT: '5173'
+      MAILPIT_WEB_PORT: '8025'
+      MAILPIT_SMTP_PORT: '1025'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Validate interpolation, service references and dependencies
+        run: docker compose --env-file .env.example config --quiet
+      - name: Verify the four expected services
+        run: |
+          docker compose --env-file .env.example config --services > /tmp/compose-services
+          diff -u <(printf '%s\n' backend db frontend mailpit) <(sort /tmp/compose-services)
+
+  dependency-audit:
+    name: npm dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Block any known production vulnerability
+        run: npm audit --omit=dev --audit-level=low
+      - name: Report all dependencies; block high and critical vulnerabilities
+        if: ${{ !cancelled() }}
+        run: npm audit --audit-level=high
