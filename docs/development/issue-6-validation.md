@@ -116,8 +116,23 @@ working-directory para garantizar `-e -o pipefail`. Actionlint y diff-check se
 repitieron sin errores. La primera ejecución tuvo una carrera inocua al guardar
 cachés compartidas; otro job guardó la misma clave y todos los comandos pasaron.
 
-Pendiente de registrar la ejecución remota con esos ajustes antes de finalizar.
+Commit de ajustes `1d2bc81f57ee1032b755508fadb4f4b520e589c7`, publicado en origin.
+[Quality checks #8](https://github.com/danipello09/inventory-sales-saas/actions/runs/43522672266)
+terminó en **success**, con sus cinco jobs y todos sus pasos aprobados:
+Django checks, React checks, PostgreSQL integration, Docker Compose validation y
+npm dependency audit. El log PostgreSQL confirma nuevamente 17.12, proveedor
+`postgresql`, base `inventory_ci`, 2 pruebas aprobadas y limpieza del servicio.
+El shell ahora aparece como `bash --noprofile --norc -e -o pipefail`; desaparece
+el aviso de runtime Node 20 en ese job. Ningún fallo se ocultó ni se omitió.
+
+El commit posterior solo incorpora esta evidencia documental. Los resultados
+de CI del último commit se mantienen además en la descripción del PR, evitando
+confundir la ejecución del código con la actualización posterior de su informe.
 Se revisaron los cinco archivos completos del índice, rutas utilizadas y ausencia
 de marcadores de conflicto/valores secretos locales. `git diff --check` y
 `git diff --cached --check` pasaron. No se añadieron archivos generados.
 No se hará merge ni se cerrará manualmente el Issue #6.
+
+Antes del merge queda la revisión humana del diff y de los cinco checks del último
+commit. La deuda moderada continúa documentada y su seguimiento no equivale a una
+remediación. No hay bloqueos técnicos conocidos tras las comprobaciones descritas.
