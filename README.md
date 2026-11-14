@@ -10,9 +10,10 @@ production release. Do not enter real customer data or expose it to the internet
 
 [![Quality checks](https://github.com/danipello09/inventory-sales-saas/actions/workflows/bootstrap-validation.yml/badge.svg?branch=main)](https://github.com/danipello09/inventory-sales-saas/actions/workflows/bootstrap-validation.yml)
 
-The badge reflects main. The MVP review branch is `feat/mvp-inventory-sales`;
-its current validation and remaining UI check are in [MVP progress](docs/development/mvp-progress.md).
-Identity and catalog were integrated through PRs #16 and #17 before this slice.
+The badge reflects main. The local MVP has been integrated through PRs #16, #17 and #18.
+The developer manually completed the 8/8 visual acceptance checklist; the prior
+browser-automation blocker remains documented as historical evidence in
+[MVP progress](docs/development/mvp-progress.md).
 
 ## What it does
 
@@ -64,7 +65,7 @@ run plain `docker compose up` with new code: its default project belongs to the 
 environment. Never use `--fake`, prune volumes or attach a preexisting volume.
 The legacy guard intentionally rejects databases with the old auth.User schema.
 
-Clone/check out the implementation branch, then from the repository root:
+Clone/check out `main`, then from the repository root:
 
 ```powershell
 py -3.12 scripts/start_identity_sandbox.py
@@ -143,8 +144,9 @@ node scripts/verify_mvp_transport.mjs http://127.0.0.1:<new-frontend-port>
 This executes the actual TypeScript API client through Vite with real HTTP/cookies;
 it is a transport integration check, not a visual browser test. It creates synthetic
 organizations in that new sandbox. Do not point it at the old/default environment.
-The current browser-automation blocker and manual UI checklist are explicit in
-[validation/progress](docs/development/mvp-progress.md).
+The earlier browser-automation limitation remains recorded in
+[historical validation/progress](docs/development/mvp-progress.md); the developer
+subsequently confirmed completing the 8/8 manual visual checklist.
 
 Five existing CI jobs remain: Django checks, React checks, PostgreSQL integration,
 Docker Compose validation, npm dependency audit. See [CI policy](docs/development/ci.md).
@@ -161,6 +163,9 @@ Docker Compose validation, npm dependency audit. See [CI policy](docs/developmen
 | frontend/src/api.ts | Typed session/CSRF transport |
 | scripts/ | New-resource-only sandbox and database verification |
 | docs/study/ | Spanish explanations tied to real code |
+
+For a concise portfolio pitch, real demo script and seven-session study route, read
+[portfolio-demo-and-interview-plan-es.md](docs/study/portfolio-demo-and-interview-plan-es.md).
 
 Start with [interview-preparation-es.md](docs/study/interview-preparation-es.md):
 20 topics, real code references, Spanish/English answers, exercises without AI and
@@ -183,4 +188,4 @@ npm findings are existing debt; passing the audit threshold does not mean zero r
 
 See [SECURITY](SECURITY.md), [contributing](CONTRIBUTING.md) and the versioned
 [MVP design/limits](docs/architecture/mvp-inventory-sales.md). No issues are closed
-or PRs merged automatically by this task.
+by this documentation update.
