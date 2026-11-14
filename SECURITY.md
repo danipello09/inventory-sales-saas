@@ -1,9 +1,15 @@
 # Development security guidance
 
-This project is in Phase 2 and has no production release or real customer service.
+This project has a development identity/organization slice and no production release or real customer service.
 There is no supported-release matrix, security response SLA, dedicated incident
 team or guaranteed response time. Do not deploy the development stack as a
 production system or load customer data into it.
+
+The first identity/organization backend is local-only development. The
+[tracked public-exposure gates](docs/development/identity-public-exposure.md) remain
+OPEN: rate limiting, email verification, account recovery and production settings.
+Use only the [new-project cutover](docs/development/identity-cutover.md); never reuse
+the existing Phase 2 PostgreSQL volume.
 
 ## Configuration and secrets
 
@@ -64,8 +70,8 @@ shared data. See [Docker operations](docs/development/docker-compose.md).
 The [approved ADR/TD decisions](docs/adr/README.md) remain the source of architectural
 constraints: same-origin session authentication, HttpOnly cookies, CSRF, centralized
 tenant scoping, relational integrity and future isolation tests. Django middleware
-and secure-cookie defaults exist, but login, memberships, business authorization
-and multi-tenant models are not implemented. A health response or green CI does
+and secure-cookie defaults exist, but the PR #16 slice implements login/memberships and scoped organization metadata.
+Catalog/inventory/sales authorization and tenant models remain unimplemented. A health response or green CI does
 not prove tenant isolation, authorization correctness or production security.
 
 Do not disable CSRF, add permissive CORS, wildcard hosts or weaken authentication

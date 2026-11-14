@@ -5,6 +5,11 @@ This repository is in Phase 2: architecture and infrastructure. Start with the
 acceptance criteria. Business designs are not authorization to implement features
 outside your selected issue.
 
+For the custom-user identity branch, use only the [new-project cutover](docs/development/identity-cutover.md).
+The default Compose project belongs to the old Phase 2 database. All Compose
+checks below require the exact new-project prefix from the sandbox manifest;
+never execute them against the original/default project or volume.
+
 ## Choose an issue and prepare the environment
 
 Choose a scoped task from the repository's
@@ -77,21 +82,25 @@ unrelated fixes into a documentation task. Put additional work in its own issue/
 
 ## Validate before requesting review
 
-With Compose running and Django migrated, run from the repository root in either
-PowerShell or Bash. Stop and investigate any nonzero exit code:
+With the new sandbox running and migrated, use the exact Compose prefix from its
+manifest before each suffix below (PowerShell or Bash). These are suffixes, not
+complete shell commands. Stop and investigate any nonzero exit code:
 
 ```text
-docker compose config --quiet
-docker compose exec backend python manage.py check
-docker compose exec backend python -m ruff check .
-docker compose exec backend python -m pytest -q
-docker compose exec frontend npm run lint
-docker compose exec frontend npm test
-docker compose exec frontend npm run build
-docker compose exec frontend npm audit --omit=dev --audit-level=low
-docker compose exec frontend npm audit --audit-level=high
-git diff --check
+config --quiet
+exec -T backend python manage.py check
+exec -T backend python -m ruff check .
+exec -T backend python -m pytest -q
+exec -T frontend npm run lint
+exec -T frontend npm test
+exec -T frontend npm run build
+exec -T frontend npm audit --omit=dev --audit-level=low
+exec -T frontend npm audit --audit-level=high
 ```
+
+Run `git diff --check` separately in the checkout. Never replace the prefix with the
+old/default Compose project. The [cutover guide](docs/development/identity-cutover.md)
+provides the complete manifest-specific command template.
 
 Build images first using the README; `npm ci` is part of the frontend image build.
 For package changes, commit `package.json` and `package-lock.json` together and

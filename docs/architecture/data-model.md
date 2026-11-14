@@ -1,5 +1,10 @@
 # Conceptual data model (Phase 2 draft)
 
+The first backend feature branch now implements only User, Organization and
+Membership with migrations/constraints. See [identity setup and API](../development/identity-backend.md).
+The remaining entities and business integrity rules below are still design work;
+this is not evidence that inventory or sales models exist.
+
 ## Entities
 
 - User: UUID, unique email, password hash, active status.

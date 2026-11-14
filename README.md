@@ -19,15 +19,15 @@ are planned; their design documents do not mean the features exist.
 
 | Available now | Planned, not implemented |
 | --- | --- |
-| Django JSON health endpoint at `/health/` | User registration, login and organization membership |
+| Health plus registration, session login/logout and own-organization API | Email verification, recovery and abuse/rate limiting |
 | React/TypeScript starter screen | Product catalog, variants, inventory and sales |
-| PostgreSQL, local email capture and four-service Compose environment | Tenant-scoped authorization and isolation tests |
-| Lint, smoke tests, build and five CI jobs | Invitations, business dashboards and production deployment |
+| PostgreSQL, local email capture and four-service Compose environment | Commercial data model and cross-tenant tests for future business modules |
+| Session/CSRF, ADMIN/STAFF and organization-isolation tests; five CI jobs | Invitations, business dashboards and production deployment |
 | Approved architecture decisions and draft data/API contracts | Final business schema and commercial API endpoints |
 
-The existing Django migrations belong to framework applications. There are no
-business models, registered login/admin routes or commercial endpoints.
-`/api/v1/` currently returns 404, including through Vite's configured `/api/` proxy.
+Framework migrations are supplemented by UUID user, organization and membership
+migrations. Identity and organization metadata APIs are implemented; there are no
+catalog, stock, sales or registered admin routes. See [the API guide](docs/development/identity-backend.md).
 
 ## Technology
 
@@ -63,7 +63,8 @@ This diagram shows the local topology. The proxy and SMTP transport are configur
 business requests and invitation delivery are future work. PostgreSQL uses a named
 volume and has no published host port. A shared database with logical organization
 isolation, session cookies, CSRF protection and same-origin deployment are approved
-design choices; application-level tenancy and authentication flows are pending.
+design choices. The current slice implements identity and scoped organization
+metadata only; business modules and their isolation tests remain pending.
 
 ## Repository layout
 
@@ -83,83 +84,59 @@ SECURITY.md              Development security and reporting guidance
 
 ## Quick start with Docker Compose
 
-You need Git, a running Docker Engine for Linux containers and Docker Compose v2
-or newer. On Windows, use Docker Desktop with WSL 2. The first build needs network
-access to download images and dependencies. Host Python and Node are optional
-when all commands run inside containers.
+**The old Phase 2 PostgreSQL volume is incompatible with accounts.User. Keep it
+intact. Do not run this checkout with the old/default Compose project.** Follow
+[the safe cutover procedure](docs/development/identity-cutover.md), which creates a
+new named project and new named volume without reading the old .env.
 
-Clone the repository, or enter your existing checkout. These Git commands work in
-PowerShell and Bash:
+Requirements: Git, Python 3.12 and a running Docker Linux engine with Compose v2+
+(Windows: Docker Desktop/WSL 2). Host Node and Python packages are not required
+for the standard-library startup helper. From this implementation checkout's root:
 
-```text
-git clone https://github.com/danipello09/inventory-sales-saas.git
-cd inventory-sales-saas
-docker info
-docker compose version
-```
-
-Create `.env` only if it does not already exist. **Windows PowerShell:**
+**Windows PowerShell:**
 
 ```powershell
-if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+py -3.12 scripts/start_identity_sandbox.py
 ```
 
 **Linux Bash:**
 
 ```bash
-if [ ! -e .env ]; then cp .env.example .env; fi
+python3.12 scripts/start_identity_sandbox.py
 ```
 
-Before starting services, edit `.env` locally: replace both `replace-in-local-env`
-values (`DJANGO_SECRET_KEY` and `POSTGRES_PASSWORD`) with distinct random values.
-Keep the development database/user names and default ports for a first setup.
-Never commit `.env`. See [security and configuration](SECURITY.md) for the
-difference between local values and production secrets.
+The helper chooses distinct loopback ports and fresh local credentials, builds
+images, waits for four healthy services, migrates the new database and checks its
+schema. It prints backend/frontend/Mailpit URLs and a private manifest containing
+the exact project-specific Compose command prefix. Keep that manifest and sandbox.env
+outside Git. Use that same prefix to resume/stop the environment; running the helper
+again creates another fresh sandbox. Never use bare Compose commands for this cutover.
+The DB has no published port. No user/data transfer from the old volume is performed.
 
-Run from the repository root in either shell, checking each command succeeds:
-
-```text
-docker compose config --quiet
-docker compose build
-docker compose up -d --wait --wait-timeout 120
-docker compose exec backend python manage.py migrate --noinput
-docker compose ps
-```
-
-The migration command initializes Django's framework tables; it does not create
-business features. Healthy HTTP services alone do not prove migrations are applied.
-
-| Service | Default local address |
-| --- | --- |
-| React / Vite | http://127.0.0.1:5173/ |
-| Django health JSON | http://127.0.0.1:8000/health/ |
-| Mailpit inbox | http://127.0.0.1:8025/ |
-| Mailpit SMTP | `127.0.0.1:1025` (host); `mailpit:1025` (backend container) |
-| PostgreSQL | `db:5432` inside Compose; no host port |
-
-Host ports can be changed in `.env`; the URLs above assume the defaults. See
-[Docker development](docs/development/docker-compose.md) for logs, readiness,
-port conflicts, image rebuilds and safe lifecycle commands. Use `docker compose
-stop` to pause services or `docker compose down` to remove containers while
-retaining the named database volume. Do not add `--volumes` for routine shutdown.
+Use `--verify` for the disposable cutover/HTTP/session/tenant regression procedure;
+only that invocation's new test resources are removed. See the cutover guide for
+reproduction, lifecycle commands and rollback to the unchanged old checkout.
 
 ## Run quality checks
 
-With the services running, execute from the root (PowerShell or Bash):
+With the new sandbox running, prefix every command below with the exact Compose
+argv from its manifest, including its -f/--env-file/--project-name values. The entries
+shown here are suffixes, not complete shell commands; never use the default project. See [cutover lifecycle](docs/development/identity-cutover.md#resume-inspect-and-stop-that-same-sandbox).
 
 ```text
-docker compose exec backend python manage.py check
-docker compose exec backend python -m ruff check .
-docker compose exec backend python -m pytest -q
-docker compose exec frontend npm run lint
-docker compose exec frontend npm test
-docker compose exec frontend npm run build
-docker compose exec frontend npm audit --omit=dev --audit-level=low
-docker compose exec frontend npm audit --audit-level=high
+exec -T backend python manage.py check
+exec -T backend python -m ruff check .
+exec -T backend python -m pytest -q
+exec -T frontend npm run lint
+exec -T frontend npm test
+exec -T frontend npm run build
+exec -T frontend npm audit --omit=dev --audit-level=low
+exec -T frontend npm audit --audit-level=high
 ```
 
-These are infrastructure smoke checks, not complete business or tenant-isolation
-coverage. Tests use a separate test database. Never point them at production.
+Tests cover identity/organization metadata and infrastructure, not future
+catalog/inventory/sales behavior or production readiness. Tests use a separate test
+database. Never point them at production.
 The [standalone setup guide](docs/development/README.md) covers host Python/Node
 development without Docker.
 
@@ -184,12 +161,14 @@ The roadmap reflects the current Phase 2 issue scope; it is not a release schedu
 | Stage | Status |
 | --- | --- |
 | Phase 2: architecture and infrastructure | Architecture decisions documented; Issues #4, #5 and #6 provide bootstrap, Docker and CI |
-| Phase 2: onboarding and contribution documentation | Issue #7, delivered through review |
-| Phase 2: infrastructure/evidence sign-off | Issue #8 remains a separate review task |
-| Future implementation | Finalize model/API details, then implement the approved authentication, tenant isolation, catalog, inventory and sales design after Phase 2 review |
+| Phase 2: onboarding and contribution documentation | Integrated via PR #13 |
+| Phase 2: infrastructure/evidence review | Evidence integrated via PR #14; not a production sign-off |
+| First Phase 3 slice | Identity/organization design integrated via PR #15; backend implementation under review in PR #16 |
+| Future implementation | Catalog, inventory, sales and their business isolation/integrity tests; public-exposure gates remain open |
 
 - [Approved ADR and technical decisions](docs/adr/README.md)
 - [Conceptual data model](docs/architecture/data-model.md) and [API outline](docs/architecture/api-contract.md)
+- [Safe identity cutover](docs/development/identity-cutover.md) and [public-exposure follow-ups](docs/development/identity-public-exposure.md)
 - [Development setup](docs/development/README.md), [Docker operations](docs/development/docker-compose.md) and [CI](docs/development/ci.md)
 - [Spanish study guide](docs/study/development-workflow-es.md)
 - Historical validation evidence: [Issue #4](docs/development/issue-4-validation.md), [Issue #5](docs/development/issue-5-validation.md), [Issue #6](docs/development/issue-6-validation.md), [Issue #7](docs/development/issue-7-validation.md)

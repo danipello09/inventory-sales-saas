@@ -1,8 +1,8 @@
 # Architecture Decision Records
 
 Status: Approved for Phase 2 design. Monorepo/bootstrap, Docker local services and
-CI infrastructure are implemented through Issues #4–#6. Business models, tenant
-isolation and authentication flows remain pending. This status clarification does
+CI infrastructure are implemented through Issues #4–#6. The PR #16 identity slice implements sessions, organizations and scoped metadata
+access; catalog/inventory/sales models and their isolation tests remain pending. This status clarification does
 not change the approved decisions below; see the [project README](../../README.md)
 for current capabilities and the [development guides](../development/README.md)
 for operating instructions.

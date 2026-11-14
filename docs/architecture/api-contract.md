@@ -1,4 +1,9 @@
-# API v1 contract outline (design only)
+# API v1 contract outline
+
+The identity/organization backend slice is implemented on its dedicated feature
+branch, subject to review; see [API and setup details](../development/identity-backend.md).
+Registration, login, logout, me and organization GET/PATCH below are implemented
+there, plus GET auth/csrf/ for token bootstrap. All other routes remain design only.
 
 Base path: `/api/v1/`. Same-origin session cookies, CSRF on unsafe methods, HTTPS in production.
 
@@ -29,6 +34,8 @@ Base path: `/api/v1/`. Same-origin session cookies, CSRF on unsafe methods, HTTP
 - Return 401 for unauthenticated, 403 for insufficient role, 404 for inaccessible tenant-owned objects, 409 for stock/state conflicts.
 - Monetary JSON values are decimal strings, not floating-point numbers.
 - Define a common error envelope, pagination, filters, idempotency strategy and request/response schemas before Phase 3.
-- Invitation emails are not sent in Phase 2.
+- Invitation emails remain unimplemented in this first backend slice.
 
-No endpoints are implemented by this document.
+This outline does not implement or claim the remaining commercial routes. The
+identity slice returns 409 for registration conflicts, 415 for non-JSON writes
+and JSON errors on its registered endpoints; see its dedicated contract.

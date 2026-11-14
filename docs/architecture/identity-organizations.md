@@ -1,15 +1,11 @@
 # Phase 3 first slice: identity, sessions and organizations
 
-Status: detailed implementation proposal for review, authorized by the autonomous
-mission. This does not replace ADR-001–006 or TD-001–007, sign off Phase 2, or imply
-the endpoints already exist on main. Baseline: `757cc5d`. The independent Phase 2
-evidence is [PR #14](https://github.com/danipello09/inventory-sales-saas/pull/14);
-onboarding remains [PR #13](https://github.com/danipello09/inventory-sales-saas/pull/13).
-Implementation must be a separate PR independently based on the same main SHA,
-referencing this design as a review dependency. This keeps each diff focused without
-duplicating design commits and allows all five main-targeted CI jobs to run. Review
-the design before accepting the implementation; no automatic merges or history
-rewrites are permitted.
+Status: approved design integrated into main via PR #15, with Phase 2 evidence
+(PR #14) and onboarding (PR #13) also integrated. The original design baseline was
+757cc5d; review hardening starts from main efa2602. PR #16 implements this contract
+and remains subject to human acceptance. This status update changes no ADR/TD or
+model/API/security decision below. Use [the safe cutover](../development/identity-cutover.md)
+for the required new database/project; never reuse the old Phase 2 volume.
 
 ## Domain and database contract
 

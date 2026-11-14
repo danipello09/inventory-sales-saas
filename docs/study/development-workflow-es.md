@@ -1,5 +1,13 @@
 # Guía de estudio: desarrollo y colaboración
 
+> Nota de versi?n: las explicaciones de ?todav?a no implementado? de esta gu?a
+> corresponden al bootstrap de Fase 2. PR #13/#14/#15 ya est?n integrados y PR #16
+> a?ade identidad/organizaciones. Para el estado actual y el arranque seguro con
+> volumen nuevo consulta [backend](../development/identity-backend.md) y
+> [cutover](../development/identity-cutover.md). Cat?logo, inventario y ventas
+> contin?an pendientes; esta gu?a no autoriza usar el volumen anterior.
+
+
 Este proyecto está en **Fase 2: arquitectura e infraestructura**. Ya ejecuta Django,
 React, PostgreSQL y Mailpit con Docker Compose, con cinco jobs de CI. Todavía no
 implementa usuarios de negocio, organizaciones, catálogo, inventario, ventas ni

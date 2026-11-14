@@ -1,5 +1,10 @@
 # Docker Compose development (Issue #5)
 
+**Legacy infrastructure reference:** the default project commands below describe the
+original Phase 2 environment. For the custom-user version in PR #16, use the
+[new-project cutover](identity-cutover.md) and its exact manifest-specific prefix.
+Do not run this checkout against the original/default project or volume.
+
 This is a development environment, not a production deployment. It implements
 ADR-001/002/003/006 and TD-003 infrastructure without business functionality.
 Only the infrastructure portions are implemented; tenant isolation, authentication
