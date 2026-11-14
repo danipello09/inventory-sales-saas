@@ -1,0 +1,159 @@
+{
+  "ref": "757cc5d2a0f8eee0292ecb737fd72cadea343e71",
+  "project": "mission-phase2-e213e0713113",
+  "results": [
+    {
+      "check": "Clone from origin",
+      "exit_code": 0,
+      "seconds": 1.02
+    },
+    {
+      "check": "Checkout exact revision",
+      "exit_code": 0,
+      "seconds": 0.05
+    },
+    {
+      "check": "Clean clone status",
+      "exit_code": 0,
+      "seconds": 0.05
+    },
+    {
+      "check": "Compose configuration",
+      "exit_code": 0,
+      "seconds": 0.14
+    },
+    {
+      "check": "Build both images",
+      "exit_code": 0,
+      "seconds": 2.48
+    },
+    {
+      "check": "Start four healthy services",
+      "exit_code": 0,
+      "seconds": 21.75
+    },
+    {
+      "check": "Apply migrations",
+      "exit_code": 0,
+      "seconds": 1.2
+    },
+    {
+      "check": "Real PostgreSQL",
+      "exit_code": 0,
+      "seconds": 1.74
+    },
+    {
+      "check": "Backend python manage.py check",
+      "exit_code": 0,
+      "seconds": 0.98
+    },
+    {
+      "check": "Backend python -m ruff check .",
+      "exit_code": 0,
+      "seconds": 0.36
+    },
+    {
+      "check": "Backend python -m pytest -q",
+      "exit_code": 0,
+      "seconds": 1.99
+    },
+    {
+      "check": "Backend python manage.py makemigrations --check --dry-run",
+      "exit_code": 0,
+      "seconds": 1.03
+    },
+    {
+      "check": "Frontend npm run lint",
+      "exit_code": 0,
+      "seconds": 1.08
+    },
+    {
+      "check": "Frontend npm test",
+      "exit_code": 0,
+      "seconds": 0.75
+    },
+    {
+      "check": "Frontend npm run build",
+      "exit_code": 0,
+      "seconds": 2.08
+    },
+    {
+      "check": "Frontend npm audit --omit=dev --audit-level=low",
+      "exit_code": 0,
+      "seconds": 0.75
+    },
+    {
+      "check": "Frontend npm audit --audit-level=high",
+      "exit_code": 0,
+      "seconds": 3.81
+    },
+    {
+      "check": "Django health",
+      "status": 200
+    },
+    {
+      "check": "Frontend HTML",
+      "status": 200
+    },
+    {
+      "check": "Frontend transformed module",
+      "status": 200
+    },
+    {
+      "check": "Django API via Vite proxy",
+      "status": 404
+    },
+    {
+      "check": "Mailpit web",
+      "status": 200
+    },
+    {
+      "check": "SMTP delivery",
+      "exit_code": 0,
+      "seconds": 0.97
+    },
+    {
+      "check": "Mailpit captured message",
+      "status": 200
+    },
+    {
+      "check": "Create persistence marker",
+      "exit_code": 0,
+      "seconds": 0.89
+    },
+    {
+      "check": "Database ID before recreation",
+      "exit_code": 0,
+      "seconds": 0.14
+    },
+    {
+      "check": "Recreate only owned database container",
+      "exit_code": 0,
+      "seconds": 1.09
+    },
+    {
+      "check": "Wait after recreation",
+      "exit_code": 0,
+      "seconds": 6.25
+    },
+    {
+      "check": "Database ID after recreation",
+      "exit_code": 0,
+      "seconds": 0.14
+    },
+    {
+      "check": "Persisted data and migrations",
+      "exit_code": 0,
+      "seconds": 0.98
+    },
+    {
+      "check": "Security topology: loopback ports, DB private",
+      "status": "passed"
+    },
+    {
+      "check": "Cleanup owned containers and volumes",
+      "exit_code": 0,
+      "seconds": 4.67
+    }
+  ]
+}

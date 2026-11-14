@@ -1,5 +1,10 @@
 # Informe de misión autónoma — Fase 2 y primer backend
 
+> Historical mission evidence: PRs #13/#14/#15 are now merged in main. Statements
+> below about their pending status describe the original run, not current onboarding.
+> Current procedure/results: [safe cutover](identity-cutover.md) and
+> [PR #16 hardening](pr-16-hardening.md).
+
 Fecha: 13 de noviembre de 2026 (America/Bogota).
 
 ## Resumen ejecutivo y estado inicial

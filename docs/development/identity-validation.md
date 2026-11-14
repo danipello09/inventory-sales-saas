@@ -1,5 +1,10 @@
 # Identity/organization slice — validation evidence
 
+> Historical mission evidence: PRs #13/#14/#15 are now merged in main. Statements
+> below about their pending status describe the original run, not current onboarding.
+> Current procedure/results: [safe cutover](identity-cutover.md) and
+> [PR #16 hardening](pr-16-hardening.md).
+
 Date: 2026-11-13 (America/Bogota). Base main: `757cc5d`.
 Branch: `feat/phase-3-identity-organizations`.
 Review dependencies: design PR #15, Phase 2 evidence PR #14, onboarding PR #13.

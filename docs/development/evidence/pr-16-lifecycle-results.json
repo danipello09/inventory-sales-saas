@@ -1,0 +1,22 @@
+[
+  {
+    "check": "Default mode: new project and volume retained with private persistent manifest",
+    "exit_code": 0
+  },
+  {
+    "check": "Manifest prefix stop",
+    "exit_code": 0
+  },
+  {
+    "check": "Manifest prefix start --wait",
+    "exit_code": 0
+  },
+  {
+    "check": "HTTP health after resume of retained new project",
+    "status": 200
+  },
+  {
+    "check": "Cleanup only newly created default-mode validation resources",
+    "exit_code": 0
+  }
+]

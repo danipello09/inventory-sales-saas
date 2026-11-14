@@ -1,10 +1,10 @@
 # Identity and organization backend: development and API
 
-This branch implements the first Phase 3 slice authorized by the autonomous mission.
-It depends on review of [design PR #15](https://github.com/danipello09/inventory-sales-saas/pull/15)
-and the [Phase 2 evidence in PR #14](https://github.com/danipello09/inventory-sales-saas/pull/14).
-Neither dependency has been merged automatically. The implementation branch targets
-main independently, so its diff does not duplicate the design or Issue #8 commits.
+This branch implements the first Phase 3 identity/organization slice. Its approved
+design (PR #15), Phase 2 verification (PR #14) and onboarding (PR #13) are integrated
+in main. PR #16 remains under review; integration is not production approval.
+Start with [the mandatory new-project cutover](identity-cutover.md) and the
+[tracked public-exposure gates](identity-public-exposure.md).
 
 ## Database transition: read this before running anything
 
@@ -55,29 +55,15 @@ For independent SQLite tests, unset DATABASE_HOST and set EXPECT_DATABASE_VENDOR
 to sqlite in your shell, then run `python -m pytest -q` from backend using its venv.
 SQLite passing is supplementary; PostgreSQL migrations/tests are required.
 
-### Optional manual Compose environment
+### Compose startup and persistent sessions
 
-In a **new checkout** of this branch, copy `.env.example` to `.env` only if absent.
-Choose fresh random local secrets and an unused project name, for example
-`identity-sandbox-<your-unique-suffix>`. Use that exact name in every Compose command.
-Choose unused loopback host ports in `.env`, such as backend 18000, frontend 15173,
-Mailpit web 18025 and SMTP 11025, and distinct database/user names. They are examples,
-not guaranteed-free ports. Do not reuse the original project name or volume.
-
-The following commands work in PowerShell and Bash; replace the sample project
-name before running and check each exit status:
-
-```text
-docker compose -p identity-sandbox-your-unique-suffix config --quiet
-docker compose -p identity-sandbox-your-unique-suffix build backend frontend
-docker compose -p identity-sandbox-your-unique-suffix up -d --wait --wait-timeout 120
-docker compose -p identity-sandbox-your-unique-suffix exec backend python manage.py migrate --noinput
-docker compose -p identity-sandbox-your-unique-suffix exec backend python -m pytest -q
-```
-
-Use ordinary `stop`/`down` without `--volumes` to preserve manual development data.
-The React starter screen is unchanged: there is no commercial/authentication UI yet.
-The Vite `/api/` proxy can forward these backend endpoints; it does not implement them.
+Use [the safe cutover procedure](identity-cutover.md). The startup helper creates a
+new, verified project and named volume with fresh credentials and ports; its manifest
+records the exact explicit Compose prefix for lifecycle commands. Never substitute
+the old/default project, old env file or an existing volume. The --verify variant
+actually checks HTTP/session persistence after restarting only the new backend,
+STAFF denial and two-organization isolation, then cleans up only its new resources.
+The frontend starter is unchanged; there is no commercial authentication UI.
 
 ## Implemented HTTP contract
 

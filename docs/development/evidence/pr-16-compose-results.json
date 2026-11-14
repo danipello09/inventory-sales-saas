@@ -1,0 +1,166 @@
+[
+  {
+    "check": "Compose config (explicit new env file)",
+    "exit_code": 0
+  },
+  {
+    "check": "Build isolated backend/frontend",
+    "exit_code": 0
+  },
+  {
+    "check": "Start four healthy services",
+    "exit_code": 0
+  },
+  {
+    "check": "Migrate only the fresh sandbox",
+    "exit_code": 0
+  },
+  {
+    "check": "Verify new PostgreSQL schema",
+    "exit_code": 0
+  },
+  {
+    "check": "Django system check",
+    "exit_code": 0
+  },
+  {
+    "check": "HTTP POST auth/register/",
+    "status": 403
+  },
+  {
+    "check": "HTTP GET auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST auth/register/",
+    "status": 201
+  },
+  {
+    "check": "HTTP POST auth/register/",
+    "status": 403
+  },
+  {
+    "check": "HTTP GET auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST auth/register/",
+    "status": 201
+  },
+  {
+    "check": "HTTP PATCH organization/",
+    "status": 403
+  },
+  {
+    "check": "HTTP POST auth/logout/",
+    "status": 403
+  },
+  {
+    "check": "HTTP POST auth/login/",
+    "status": 403
+  },
+  {
+    "check": "HTTP GET auth/me/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP PATCH organization/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP PATCH organization/",
+    "status": 400
+  },
+  {
+    "check": "HTTP GET organization/0a05cbd5-6a83-4bf6-b61a-1d0e334b8e54/",
+    "status": 404
+  },
+  {
+    "check": "HTTP GET organization/",
+    "status": 200
+  },
+  {
+    "check": "Create only synthetic sandbox STAFF",
+    "exit_code": 0
+  },
+  {
+    "check": "HTTP GET auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST auth/login/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET organization/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP PATCH organization/",
+    "status": 403
+  },
+  {
+    "check": "HTTP GET organization/0a05cbd5-6a83-4bf6-b61a-1d0e334b8e54/",
+    "status": 404
+  },
+  {
+    "check": "Restart only new backend (retain sessions)",
+    "exit_code": 0
+  },
+  {
+    "check": "Wait for new backend",
+    "exit_code": 0
+  },
+  {
+    "check": "HTTP GET auth/me/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET organization/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET organization/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST auth/logout/",
+    "status": 204
+  },
+  {
+    "check": "HTTP GET auth/me/",
+    "status": 401
+  },
+  {
+    "check": "HTTP GET auth/me/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET organization/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET organization/",
+    "status": 200
+  },
+  {
+    "check": "Cleanup only newly owned sandbox",
+    "exit_code": 0
+  }
+]
