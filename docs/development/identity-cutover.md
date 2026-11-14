@@ -1,8 +1,8 @@
 # Safe development cutover to accounts.User
 
 The approved identity design, onboarding and Phase 2 evidence from PRs #15, #13
-and #14 are integrated in main (`efa2602`). PR #16 implements the first backend
-slice. This procedure creates a **new Compose project and new PostgreSQL volume**;
+and #14 are integrated in main; PR #16 is also integrated (`72006a3`). This branch
+adds the catalog on that custom-user foundation. This procedure creates a **new Compose project and new PostgreSQL volume**;
 it is not a migration of the old environment and does not copy its users/data.
 
 ## Rules before starting
@@ -47,7 +47,7 @@ The command does the following, failing if any mandatory check fails:
 4. Builds backend/frontend, starts all four services and waits for healthchecks.
 5. Inspects the database container's project label and actual volume mount to prove
    it uses the newly named volume; then applies migrations only there.
-6. Checks real PostgreSQL, the new user schema and 20 migrations, runs Django check,
+6. Checks real PostgreSQL, the new user/catalog schema and 22 migrations, runs Django check,
    and prints URLs and the path to manifest.json. The new stack stays running.
 
 The private manifest records project/volume names, URLs and the exact Compose argv.
@@ -106,6 +106,10 @@ removes **only the newly created verification project/volumes** in finally. The
 original project/volume is never attached or used. Redacted logs/results remain
 in a temporary identity-sandbox-* directory; that verification manifest is not a
 persistent development environment and must not be reused.
+
+Add `--catalog` to `--verify` to exercise the new catalog HTTP scenario on another
+fresh sandbox (category/product/variants, STAFF, foreign UUIDs, price strings,
+pagination, atomic rollback and deactivation). It retains the same scoped cleanup.
 
 The separate `scripts/verify_identity_database.py`, run with the backend venv's
 Python, verifies all PostgreSQL tests and rejects a real old schema created in a

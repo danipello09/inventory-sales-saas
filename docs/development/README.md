@@ -1,6 +1,6 @@
 # Phase 2 development setup
 
-This repository currently contains a minimal Django/DRF backend and React/TypeScript/Vite frontend. The identity/organization backend is implemented in PR #16; catalog, inventory and sales remain unimplemented.
+This repository currently contains a minimal Django/DRF backend and React/TypeScript/Vite frontend. The identity/organization backend is implemented in PR #16; the catalog is implemented on its own branch; inventory and sales remain unimplemented.
 
 **Existing Phase 2 databases are incompatible with the custom user.** Start this
 version using [the new-project cutover](identity-cutover.md), never the old/default
@@ -94,7 +94,7 @@ See [Issue #6 validation](issue-6-validation.md) for actual local and remote res
 - Django uses SQLite for standalone smoke checks when DATABASE_HOST is unset;
   Compose and the integration CI job already use PostgreSQL.
 - Settings are intended for development smoke checks, not production deployment.
-- Identity/organization endpoints exist in PR #16; catalog, stock and sales endpoints remain unimplemented.
+- Identity/organization endpoints exist in PR #16; catalog endpoints are added on the catalog branch; stock and sales remain unimplemented.
 
 Follow issue -> branch -> PR -> verified checks -> review -> merge. Do not claim checks passed unless executed.
 

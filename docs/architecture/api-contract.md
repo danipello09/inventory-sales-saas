@@ -1,41 +1,45 @@
-# API v1 contract outline
+# Implemented API v1 contract
 
-The identity/organization backend slice is implemented on its dedicated feature
-branch, subject to review; see [API and setup details](../development/identity-backend.md).
-Registration, login, logout, me and organization GET/PATCH below are implemented
-there, plus GET auth/csrf/ for token bootstrap. All other routes remain design only.
+Identity/organizations from PR #16 are integrated in main. This catalog branch adds
+categories/products/variants. All paths below are implemented here; future-only
+routes are kept in the separate [API roadmap](api-roadmap.md), not presented as live.
 
-Base path: `/api/v1/`. Same-origin session cookies, CSRF on unsafe methods, HTTPS in production.
+Base: `/api/v1/`. Sessions, HttpOnly cookies, same-origin and CSRF are retained.
+Unsafe endpoints require JSON and a valid X-CSRFToken; auth/csrf/ supplies the token.
 
 | Method | Path | Access |
-|---|---|---|
-| POST | auth/register/ | Public |
-| POST | auth/login/ | Public |
-| POST | auth/logout/ | Authenticated |
-| GET | auth/me/ | Authenticated |
-| GET,PATCH | organization/ | GET member; PATCH org admin |
-| POST | invitations/ | Org admin |
-| POST | invitations/accept/ | Valid invite holder |
-| GET,POST | products/ | GET member; POST org admin |
-| GET,PATCH | products/{id}/ | GET member; PATCH org admin |
-| GET,POST | products/{id}/variants/ | GET member; POST org admin |
-| GET | inventory/ | Member |
-| POST | inventory/adjustments/ | Org admin |
-| GET,POST | sales/ | Member |
-| GET | sales/{id}/ | Member |
-| POST | sales/{id}/cancel/ | Org admin |
-| GET | dashboard/ | Org admin |
-| GET | platform/organizations/ | Platform admin, metadata only |
-| PATCH | platform/organizations/{id}/ | Platform admin, activation only |
+| --- | --- | --- |
+| GET | auth/csrf/ | Public token bootstrap |
+| POST | auth/register/ | Public, CSRF; creates owner/org/ADMIN atomically |
+| POST | auth/login/ | Public, CSRF |
+| POST | auth/logout/ | Authenticated, CSRF |
+| GET | auth/me/ | Authenticated active user |
+| GET, PATCH | organization/ | Active member; PATCH ADMIN only |
+| GET, POST | categories/ | Active member; POST ADMIN only |
+| GET, PATCH | categories/{id}/ | Own tenant; PATCH ADMIN only |
+| GET, POST | products/ | Active member; POST ADMIN only; includes 1–50 initial variants |
+| GET, PATCH | products/{id}/ | Own tenant; PATCH ADMIN only |
+| GET, POST | products/{id}/variants/ | Own parent; POST ADMIN only |
+| GET, PATCH | products/{id}/variants/{variant_id}/ | Own parent and variant; PATCH ADMIN only |
 
-## Conventions
+STAFF reads its own catalog including inactive metadata; ADMIN writes. No automatic
+platform/superuser access, inactive memberships or suspended-org commercial access.
+Foreign category/product/variant UUIDs return 404. There are no HTTP DELETE or PUT
+catalog methods; deactivate through PATCH instead. Fields organization_id, product_id,
+roles and privileges cannot be mass-assigned. Parent product is selected by the URL.
 
-- Do not trust organization identifiers or sale prices supplied by clients.
-- Return 401 for unauthenticated, 403 for insufficient role, 404 for inaccessible tenant-owned objects, 409 for stock/state conflicts.
-- Monetary JSON values are decimal strings, not floating-point numbers.
-- Define a common error envelope, pagination, filters, idempotency strategy and request/response schemas before Phase 3.
-- Invitation emails remain unimplemented in this first backend slice.
+See [catalog design, JSON examples and restrictions](product-catalog.md) for category
+names, SKU/variant identity, decimal prices, deactivation and PostgreSQL guarantees.
+See [identity contract](identity-organizations.md) for sessions, roles and user state.
 
-This outline does not implement or claim the remaining commercial routes. The
-identity slice returns 409 for registration conflicts, 415 for non-JSON writes
-and JSON errors on its registered endpoints; see its dedicated contract.
+Catalog lists are paginated: `page`, `page_size` (default 20, 1–100), stable created_at/UUID
+order; shape count/next/previous/results. Filters are documented in the catalog design;
+unknown/invalid filters are 400. No unbounded nested variant list is embedded in products.
+Prices are plain decimal strings in requests/responses, never float money. Current
+COP/USD/EUR prices use 2 decimal places and Decimal(12,2), bounded and nonnegative.
+
+Errors use the existing error/code/message/details JSON envelope on registered
+endpoints: 400 invalid input/JSON, 401 no valid active session, 403 role/state/CSRF,
+404 wrong/foreign object or page, 405 unsupported method, 409 uniqueness/state
+conflict, 415 non-JSON write. Unknown URL paths retain Django's ordinary 404 format.
+Unexpected database failures are not hidden. No production security guarantee is made.

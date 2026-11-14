@@ -2,7 +2,9 @@
 
 This branch implements the first Phase 3 identity/organization slice. Its approved
 design (PR #15), Phase 2 verification (PR #14) and onboarding (PR #13) are integrated
-in main. PR #16 remains under review; integration is not production approval.
+in main, along with the identity implementation from PR #16. Integration is not
+production approval. This catalog branch extends that foundation; see
+[catalog design](../architecture/product-catalog.md).
 Start with [the mandatory new-project cutover](identity-cutover.md) and the
 [tracked public-exposure gates](identity-public-exposure.md).
 
@@ -141,8 +143,9 @@ Django-created sessions; credential tests use the real login implementation and
 password hasher. The independent verifier additionally uses an actual HTTP server
 and cookie jar, not mocked responses. See [validation evidence](identity-validation.md).
 
-This is a backend foundation, not a finished multi-tenant business product. Catalog,
-inventory, sales, reports, invitations, account verification/recovery, abuse/rate
+This is a backend foundation, not a finished multi-tenant business product. The
+catalog is implemented on its own branch. Inventory, sales, reports, invitations,
+account verification/recovery, abuse/rate
 limiting, production settings and legacy-data conversion are not implemented.
 Registration conflicts can reveal account existence. Do not expose this development
 API publicly. Existing dependency debt and lack of automated Python audit remain.
