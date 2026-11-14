@@ -1,6 +1,11 @@
 # Architecture Decision Records
 
-Status: Approved for Phase 2 design; implementation pending.
+Status: Approved for Phase 2 design. Monorepo/bootstrap, Docker local services and
+CI infrastructure are implemented through Issues #4–#6. Business models, tenant
+isolation and authentication flows remain pending. This status clarification does
+not change the approved decisions below; see the [project README](../../README.md)
+for current capabilities and the [development guides](../development/README.md)
+for operating instructions.
 
 | ID | Decision |
 |---|---|

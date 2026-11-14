@@ -183,21 +183,25 @@ vulnerability scanning and a fully hashed transitive Python lock are future work
 - Low/moderate development findings remain visible in the full audit log, but
   do not fail that threshold. This policy also permits new moderate development
   findings, so reviewers must inspect audit changes rather than rely only on green.
-- Review the audit on dependency-changing PRs and at least monthly. Track the
-  minimatch debt in Issue #6 and its validation report until a compatible upgrade
-  has been tested; the earlier Issue #4 report preserves the historical baseline.
+- Review the audit on dependency-changing PRs and at least monthly. Issue #6's
+  validation report records the minimatch debt, and Issue #4 preserves the earlier
+  baseline. Closing an infrastructure issue does not remediate that debt: keep
+  remaining findings visible and address compatible upgrades in scoped maintenance work.
 - Test compatible upstream updates in a focused maintenance PR; update manifest
   and lockfile together, re-run lint/test/build/audits, and review advisory changes.
   No `npm audit fix --force`, incompatible override, downgrade to unsupported
   tooling or suppression is part of this issue.
 
-The baseline was ten moderate development alerts in Issues #4/#5. This issue's
-local Node 22/npm 10 run reports nine, rooted in minimatch
+The baseline was ten moderate development alerts in Issues #4/#5. Issue #6's
+local Node 22/npm 10 run reported nine, rooted in minimatch
 [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249), with zero
 production findings. Counts depend on the resolved tree, platform, npm and live
 advisory data; a changed count alone does not prove remediation. Dependencies and
 lockfile are unchanged. Registry/network errors also fail audit; missing audit
 data is not treated as success.
+
+See [SECURITY.md](../../SECURITY.md) for environment handling and private reporting,
+and [CONTRIBUTING.md](../../CONTRIBUTING.md) for PR and human-review expectations.
 
 ## Security and CI concepts
 
