@@ -7,4 +7,8 @@ def health(request):
     return JsonResponse({"status": "ok"})
 
 
-urlpatterns = [path("health/", health, name="health"), path("api/v1/", include("identity.urls"))]
+urlpatterns = [
+    path("health/", health, name="health"),
+    path("api/v1/", include("identity.urls")),
+    path("api/v1/", include("catalog.urls")),
+]

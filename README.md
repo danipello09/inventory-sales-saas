@@ -7,27 +7,28 @@ management with React, Django REST Framework and PostgreSQL. It is also a
 professional portfolio demonstrating architecture decisions, reproducible
 development and evidence-based pull request review.
 
-**Current stage: Phase 2 — architecture and infrastructure.** The repository runs
-a development environment and smoke checks. It is not a finished commercial
-application and is not ready for production or real customer data.
+**Current stage: Phase 3 — identity and catalog backend (catalog under review).**
+The repository runs a development environment and integration checks. It is not a
+finished commercial application and is not ready for production or real customer data.
 
 ## Purpose and implementation status
 
 The intended product helps businesses track product variants, stock movements and
-sales while keeping each organization's data separate. These business capabilities
-are planned; their design documents do not mean the features exist.
+sales while keeping each organization's data separate. The catalog backend is now
+implemented on this branch; stock/sales and their design-only routes remain planned.
 
 | Available now | Planned, not implemented |
 | --- | --- |
 | Health plus registration, session login/logout and own-organization API | Email verification, recovery and abuse/rate limiting |
-| React/TypeScript starter screen | Product catalog, variants, inventory and sales |
+| Categories, products and variants API; React/TypeScript starter screen | Inventory, sales and commercial frontend |
 | PostgreSQL, local email capture and four-service Compose environment | Commercial data model and cross-tenant tests for future business modules |
 | Session/CSRF, ADMIN/STAFF and organization-isolation tests; five CI jobs | Invitations, business dashboards and production deployment |
 | Approved architecture decisions and draft data/API contracts | Final business schema and commercial API endpoints |
 
 Framework migrations are supplemented by UUID user, organization and membership
 migrations. Identity and organization metadata APIs are implemented; there are no
-catalog, stock, sales or registered admin routes. See [the API guide](docs/development/identity-backend.md).
+stock, sales or registered admin routes. Catalog routes and constraints are documented
+in [the catalog design](docs/architecture/product-catalog.md). See [the API guide](docs/development/identity-backend.md).
 
 ## Technology
 
@@ -156,15 +157,16 @@ data, and never put credentials in browser-exposed `VITE_*` variables.
 
 ## Roadmap and further reading
 
-The roadmap reflects the current Phase 2 issue scope; it is not a release schedule.
+The roadmap reflects the current implementation scope; it is not a release schedule.
 
 | Stage | Status |
 | --- | --- |
 | Phase 2: architecture and infrastructure | Architecture decisions documented; Issues #4, #5 and #6 provide bootstrap, Docker and CI |
 | Phase 2: onboarding and contribution documentation | Integrated via PR #13 |
 | Phase 2: infrastructure/evidence review | Evidence integrated via PR #14; not a production sign-off |
-| First Phase 3 slice | Identity/organization design integrated via PR #15; backend implementation under review in PR #16 |
-| Future implementation | Catalog, inventory, sales and their business isolation/integrity tests; public-exposure gates remain open |
+| Identity slice | Design and implementation integrated via PR #15/#16 |
+| Catalog slice | Category/product/variant backend implemented on its own review branch |
+| Future implementation | Inventory, sales and their isolation/integrity tests; commercial frontend and public-exposure gates remain open |
 
 - [Approved ADR and technical decisions](docs/adr/README.md)
 - [Conceptual data model](docs/architecture/data-model.md) and [API outline](docs/architecture/api-contract.md)

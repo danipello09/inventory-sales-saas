@@ -1,9 +1,10 @@
 # Conceptual data model (Phase 2 draft)
 
-The first backend feature branch now implements only User, Organization and
-Membership with migrations/constraints. See [identity setup and API](../development/identity-backend.md).
-The remaining entities and business integrity rules below are still design work;
-this is not evidence that inventory or sales models exist.
+Identity/Organization/Membership are integrated in main via PR #16. The catalog
+branch implements Category, Product and ProductVariant with UUIDs, tenant-aware
+composite PostgreSQL FKs, organization-scoped SKU uniqueness and a deferred minimum
+variant invariant. See [catalog design](product-catalog.md). Inventory, stock movements,
+sales, cancellations and invitations below remain future design, not implemented.
 
 ## Entities
 
@@ -32,4 +33,6 @@ this is not evidence that inventory or sales models exist.
 
 ## Pending review
 
-Finalize FK layout, indexes, category uniqueness, variant identity for no-size/no-color items, currency scale handling and deletion policy before Phase 3.
+Catalog category uniqueness, variant identity, price scale, deactivation and composite
+FKs are resolved in the catalog design. Future inventory/sales constraints, concurrency,
+audit/deletion and monetary snapshot behavior still need their own implementation.

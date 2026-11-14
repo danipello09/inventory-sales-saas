@@ -33,7 +33,14 @@ def main():
         action="store_true",
         help="Verify HTTP and clean up only this new sandbox",
     )
+    parser.add_argument(
+        "--catalog",
+        action="store_true",
+        help="Include catalog HTTP checks with --verify",
+    )
     args = parser.parse_args()
+    if args.catalog and not args.verify:
+        parser.error("--catalog requires --verify")
     root = Path(__file__).resolve().parents[1]
     project = "identity-sandbox-" + uuid.uuid4().hex[:12]
     if args.verify:
@@ -231,7 +238,7 @@ def main():
             "from django.db import connection; "
             "connection.ensure_connection(); assert connection.vendor == 'postgresql'; "
             "c=connection.cursor(); c.execute('SELECT count(*) FROM django_migrations'); "
-            "assert c.fetchone()[0] == 20; c.execute(\"SELECT to_regclass('auth_user')\"); "
+            "assert c.fetchone()[0] == 22; c.execute(\"SELECT to_regclass('auth_user')\"); "
             "assert c.fetchone()[0] is None; c.close()",
         )
         run(
@@ -374,6 +381,110 @@ def main():
                 staff.request("organization/")["name"] == "Renamed A",
                 "STAFF mutated organization",
             )
+            if args.catalog:
+                a.request(
+                    "auth/login/",
+                    method="POST",
+                    payload={"email": "owner-a@example.test", "password": password},
+                    csrf=a.token(),
+                )
+                a.request(
+                    "categories/",
+                    method="POST",
+                    payload={"name": "Shirts"},
+                    expected=403,
+                )
+                category = a.request(
+                    "categories/",
+                    method="POST",
+                    payload={"name": " Shirts "},
+                    csrf=a.token(),
+                    expected=201,
+                )
+                data = {
+                    "category_id": category["id"],
+                    "name": "Catalog shirt",
+                    "variants": [
+                        {"sku": "plain", "price": "12.50"},
+                        {
+                            "sku": "blue-m",
+                            "size": "M",
+                            "color": "Blue",
+                            "price": "14.00",
+                        },
+                    ],
+                }
+                product = a.request(
+                    "products/",
+                    method="POST",
+                    payload=data,
+                    csrf=a.token(),
+                    expected=201,
+                )
+                require(
+                    product["variant_count"] == 2, "Product missing initial variants"
+                )
+                page = a.request(f"products/{product['id']}/variants/?page_size=1")
+                require(
+                    page["count"] == 2 and len(page["results"]) == 1 and page["next"],
+                    "Unbounded or incomplete variants",
+                )
+                require(
+                    page["results"][0]["price"] == "12.50",
+                    "Monetary value not a decimal string",
+                )
+                b.request(f"products/{product['id']}/", expected=404)
+                b.request(
+                    "products/",
+                    method="POST",
+                    payload=data,
+                    csrf=b.token(),
+                    expected=404,
+                )
+                require(
+                    b.request("products/")["count"] == 0, "Cross-tenant catalog leak"
+                )
+                staff.request(f"products/{product['id']}/")
+                staff.request(
+                    f"products/{product['id']}/",
+                    method="PATCH",
+                    payload={"name": "Forbidden"},
+                    csrf=staff.token(),
+                    expected=403,
+                )
+                a.request(
+                    f"products/{product['id']}/variants/",
+                    method="POST",
+                    payload={"sku": "red", "color": "Red", "price": "1.20"},
+                    csrf=a.token(),
+                    expected=201,
+                )
+                a.request(
+                    "products/",
+                    method="POST",
+                    payload={
+                        **data,
+                        "variants": [
+                            {"sku": "rollback-first", "price": "1"},
+                            {"sku": "PLAIN", "color": "red", "price": "1"},
+                        ],
+                    },
+                    csrf=a.token(),
+                    expected=409,
+                )
+                require(
+                    a.request("products/")["count"] == 1, "Partial product persisted"
+                )
+                a.request(
+                    f"categories/{category['id']}/",
+                    method="PATCH",
+                    payload={"is_active": False},
+                    csrf=a.token(),
+                )
+                require(
+                    not a.request(f"products/{product['id']}/")["is_available"],
+                    "Inactive category did not affect availability",
+                )
         else:
             retained = True
             print(

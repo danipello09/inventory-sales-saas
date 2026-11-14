@@ -195,6 +195,14 @@ def main():
             [sys.executable, "manage.py", "migrate", "--noinput"],
             contains="No migrations to apply",
         )
+        run(
+            "Reverse PostgreSQL catalog DDL on owned database",
+            [sys.executable, "manage.py", "migrate", "catalog", "0001", "--noinput"],
+        )
+        run(
+            "Reapply PostgreSQL catalog DDL",
+            [sys.executable, "manage.py", "migrate", "catalog", "0002", "--noinput"],
+        )
         run("Django system checks", [sys.executable, "manage.py", "check"])
         run(
             "Migration drift",
@@ -208,7 +216,7 @@ def main():
         )
         with connect("identity_fresh") as db:
             assert db.execute("SELECT count(*) FROM django_migrations").fetchone() == (
-                20,
+                22,
             )
             assert db.execute(
                 "SELECT data_type FROM information_schema.columns WHERE table_name='accounts_user' AND column_name='id'"
@@ -216,7 +224,7 @@ def main():
             assert db.execute("SELECT to_regclass('auth_user')").fetchone() == (None,)
         results.append(
             {
-                "check": "Fresh schema: UUID user, 20 migrations, no auth_user",
+                "check": "Fresh schema: UUID user, 22 migrations, no auth_user",
                 "status": "passed",
             }
         )

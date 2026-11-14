@@ -174,7 +174,8 @@ Configuration validation creates no containers or volumes and needs no teardown.
 The current frontend test only verifies the component export. The PR #16 backend
 also checks identity, sessions/CSRF, organization scoping and PostgreSQL concurrency
 (with PostgreSQL-only tests explicitly skipped on SQLite). These do not prove
-future catalog/inventory/sales isolation or production hardening. No coverage percentage is claimed. Python
+future inventory/sales isolation or production hardening. The catalog branch adds
+its own scoped API and direct PostgreSQL integrity/concurrency tests. No coverage percentage is claimed. Python
 vulnerability scanning and a fully hashed transitive Python lock are future work.
 
 ## Dependency vulnerability policy
