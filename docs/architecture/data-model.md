@@ -3,8 +3,9 @@
 Identity/Organization/Membership are integrated in main via PR #16. The catalog
 branch implements Category, Product and ProductVariant with UUIDs, tenant-aware
 composite PostgreSQL FKs, organization-scoped SKU uniqueness and a deferred minimum
-variant invariant. See [catalog design](product-catalog.md). Inventory, stock movements,
-sales, cancellations and invitations below remain future design, not implemented.
+variant invariant. See [catalog design](product-catalog.md). The MVP branch implements
+inventory, movements, sales and minimal cancellation as documented in the
+[physical schema](mvp-inventory-sales.md). Invitations remain future design.
 
 ## Entities
 
@@ -19,7 +20,7 @@ sales, cancellations and invitations below remain future design, not implemented
 - StockMovement: organization, variant, signed delta, reason, actor, source reference, timestamp; append-only.
 - Sale: organization, creator, currency, total, status, timestamp.
 - SaleItem: sale, variant, quantity > 0, unit price snapshot, subtotal.
-- SaleCancellation: unique sale, actor, reason, timestamp; one cancellation per sale.
+- Cancellation: actor, reason and timestamp on Sale; one transition per sale, no separate table in MVP.
 
 ## Integrity requirements
 
@@ -34,5 +35,6 @@ sales, cancellations and invitations below remain future design, not implemented
 ## Pending review
 
 Catalog category uniqueness, variant identity, price scale, deactivation and composite
-FKs are resolved in the catalog design. Future inventory/sales constraints, concurrency,
-audit/deletion and monetary snapshot behavior still need their own implementation.
+FKs are resolved in the catalog design. Inventory/sales constraints, concurrency,
+API audit immutability and price snapshots are implemented in the MVP; trusted SQL
+history immutability and production controls remain out of scope.

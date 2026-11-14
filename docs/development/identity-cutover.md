@@ -47,7 +47,7 @@ The command does the following, failing if any mandatory check fails:
 4. Builds backend/frontend, starts all four services and waits for healthchecks.
 5. Inspects the database container's project label and actual volume mount to prove
    it uses the newly named volume; then applies migrations only there.
-6. Checks real PostgreSQL, the new user/catalog schema and 22 migrations, runs Django check,
+6. Checks real PostgreSQL, the new identity/catalog/inventory/sales schema and 27 migrations, runs Django check,
    and prints URLs and the path to manifest.json. The new stack stays running.
 
 The private manifest records project/volume names, URLs and the exact Compose argv.
@@ -83,7 +83,7 @@ Keep that prefix unchanged and replace only the final `ps` with one command:
 Never add `--volumes` for routine shutdown. Never prune volumes. The old and new
 projects can coexist because published host ports differ. PostgreSQL has no host
 port. Use the manifest's backend/frontend/Mailpit URLs, not the old default URLs.
-The frontend still has its starter screen; authentication is currently an API.
+The MVP React frontend supports registration/login, catalog, inventory and sales.
 
 ## Reproduce the cutover and HTTP checks without keeping test resources
 
@@ -110,6 +110,8 @@ persistent development environment and must not be reused.
 Add `--catalog` to `--verify` to exercise the new catalog HTTP scenario on another
 fresh sandbox (category/product/variants, STAFF, foreign UUIDs, price strings,
 pagination, atomic rollback and deactivation). It retains the same scoped cleanup.
+On the MVP branch it also exercises inventory adjustments and a STAFF sale:
+10 added, 3 sold, 7 remaining, two movements and cross-tenant access denial.
 
 The separate `scripts/verify_identity_database.py`, run with the backend venv's
 Python, verifies all PostgreSQL tests and rejects a real old schema created in a

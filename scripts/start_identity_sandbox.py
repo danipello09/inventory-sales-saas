@@ -238,7 +238,7 @@ def main():
             "from django.db import connection; "
             "connection.ensure_connection(); assert connection.vendor == 'postgresql'; "
             "c=connection.cursor(); c.execute('SELECT count(*) FROM django_migrations'); "
-            "assert c.fetchone()[0] == 22; c.execute(\"SELECT to_regclass('auth_user')\"); "
+            "assert c.fetchone()[0] == 27; c.execute(\"SELECT to_regclass('auth_user')\"); "
             "assert c.fetchone()[0] is None; c.close()",
         )
         run(
@@ -485,6 +485,36 @@ def main():
                     not a.request(f"products/{product['id']}/")["is_available"],
                     "Inactive category did not affect availability",
                 )
+                fresh_category = a.request("categories/", method="POST", payload={"name": "MVP"},
+                                           csrf=a.token(), expected=201)
+                demo = a.request("products/", method="POST", csrf=a.token(), expected=201,
+                                 payload={"name": "MVP demo", "category_id": fresh_category["id"],
+                                          "variants": [{"sku": "MVP-DEMO", "price": "12.50"}]})
+                variant = a.request(f"products/{demo['id']}/variants/")["results"][0]
+                adjustment = {"variant_id": variant["id"], "delta": 10, "reason": "Opening stock"}
+                a.request("inventory/adjustments/", method="POST", payload=adjustment, expected=403)
+                staff.request("inventory/adjustments/", method="POST", payload=adjustment,
+                              csrf=staff.token(), expected=403)
+                b.request("inventory/adjustments/", method="POST", payload=adjustment,
+                          csrf=b.token(), expected=404)
+                result = a.request("inventory/adjustments/", method="POST", payload=adjustment,
+                                   csrf=a.token(), expected=201)
+                require(result["quantity"] == 10, "Opening balance wrong")
+                order = {"items": [{"variant_id": variant["id"], "quantity": 3}]}
+                b.request("sales/", method="POST", payload=order, csrf=b.token(), expected=404)
+                sale = staff.request("sales/", method="POST", payload=order,
+                                     csrf=staff.token(), expected=201)
+                require(sale["total"] == "37.50", "Sale snapshot/total wrong")
+                inventory = a.request("inventory/")["results"]
+                require(next(row for row in inventory if row["variant_id"] == variant["id"])["quantity"] == 7,
+                        "Stock not decremented to seven")
+                require(a.request("inventory/movements/")["count"] == 2, "Missing stock history")
+                require(a.request(f"sales/{sale['id']}/")["total"] == "37.50", "Sale detail wrong")
+                b.request(f"sales/{sale['id']}/", expected=404)
+                require(b.request("sales/")["count"] == 0, "Sales leaked across tenants")
+                require(b.request("inventory/movements/")["count"] == 0, "History leaked")
+                results.append({"check": "MVP real HTTP: 10 minus 3 equals 7; STAFF sale; tenant isolation",
+                                "status": "passed"})
         else:
             retained = True
             print(

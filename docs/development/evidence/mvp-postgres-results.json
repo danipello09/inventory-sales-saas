@@ -1,0 +1,132 @@
+[
+  {
+    "check": "Create owned PostgreSQL",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Clone baseline",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Pin baseline",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Apply actual legacy migrations",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Legacy migration rejected before writes",
+    "exit_code": 1,
+    "expected_exit": 1
+  },
+  {
+    "check": "Legacy schema/history/data unchanged",
+    "status": "passed"
+  },
+  {
+    "check": "Fresh custom-user migrations",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Idempotent fresh migrate",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Reverse MVP tenant DDL on owned database",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Reapply MVP tenant DDL",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Django system checks",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Migration drift",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Ruff backend",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Real PostgreSQL tests",
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "check": "Fresh schema: UUID user, 27 migrations, no auth_user",
+    "status": "passed"
+  },
+  {
+    "check": "HTTP GET /health/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST /api/v1/auth/register/",
+    "status": 403
+  },
+  {
+    "check": "HTTP GET /api/v1/auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST /api/v1/auth/register/",
+    "status": 201
+  },
+  {
+    "check": "HTTP GET /api/v1/auth/me/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET /api/v1/organization/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET /api/v1/auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP PATCH /api/v1/organization/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST /api/v1/auth/logout/",
+    "status": 204
+  },
+  {
+    "check": "HTTP GET /api/v1/auth/me/",
+    "status": 401
+  },
+  {
+    "check": "HTTP GET /api/v1/auth/csrf/",
+    "status": 200
+  },
+  {
+    "check": "HTTP POST /api/v1/auth/login/",
+    "status": 200
+  },
+  {
+    "check": "HTTP GET /api/v1/auth/me/",
+    "status": 200
+  },
+  {
+    "check": "Cleanup only owned PostgreSQL/volume",
+    "exit_code": 0,
+    "expected_exit": 0
+  }
+]

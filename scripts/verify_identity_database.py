@@ -196,12 +196,12 @@ def main():
             contains="No migrations to apply",
         )
         run(
-            "Reverse PostgreSQL catalog DDL on owned database",
-            [sys.executable, "manage.py", "migrate", "catalog", "0001", "--noinput"],
+            "Reverse MVP tenant DDL on owned database",
+            [sys.executable, "manage.py", "migrate", "inventory", "0002", "--noinput"],
         )
         run(
-            "Reapply PostgreSQL catalog DDL",
-            [sys.executable, "manage.py", "migrate", "catalog", "0002", "--noinput"],
+            "Reapply MVP tenant DDL",
+            [sys.executable, "manage.py", "migrate", "inventory", "0003", "--noinput"],
         )
         run("Django system checks", [sys.executable, "manage.py", "check"])
         run(
@@ -216,7 +216,7 @@ def main():
         )
         with connect("identity_fresh") as db:
             assert db.execute("SELECT count(*) FROM django_migrations").fetchone() == (
-                22,
+                27,
             )
             assert db.execute(
                 "SELECT data_type FROM information_schema.columns WHERE table_name='accounts_user' AND column_name='id'"
@@ -224,7 +224,7 @@ def main():
             assert db.execute("SELECT to_regclass('auth_user')").fetchone() == (None,)
         results.append(
             {
-                "check": "Fresh schema: UUID user, 22 migrations, no auth_user",
+                "check": "Fresh schema: UUID user, 27 migrations, no auth_user",
                 "status": "passed",
             }
         )
