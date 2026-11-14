@@ -1,7 +1,7 @@
 # Implemented API v1 contract
 
-Identity/organizations from PR #16 are integrated in main. This catalog branch adds
-categories/products/variants. All paths below are implemented here; future-only
+Identity/organizations and catalog from PRs #16/#17 are integrated in main. This MVP
+branch adds inventory and sales. All paths below are implemented here; future-only
 routes are kept in the separate [API roadmap](api-roadmap.md), not presented as live.
 
 Base: `/api/v1/`. Sessions, HttpOnly cookies, same-origin and CSRF are retained.
@@ -21,6 +21,12 @@ Unsafe endpoints require JSON and a valid X-CSRFToken; auth/csrf/ supplies the t
 | GET, PATCH | products/{id}/ | Own tenant; PATCH ADMIN only |
 | GET, POST | products/{id}/variants/ | Own parent; POST ADMIN only |
 | GET, PATCH | products/{id}/variants/{variant_id}/ | Own parent and variant; PATCH ADMIN only |
+| GET | inventory/ | ADMIN/STAFF, own variants and balances |
+| POST | inventory/adjustments/ | ADMIN, atomic adjustment and movement |
+| GET | inventory/movements/ | ADMIN/STAFF, own immutable API history |
+| GET, POST | sales/ | ADMIN/STAFF, own sales; atomic creation |
+| GET | sales/{id}/ | Own sale with historical item snapshots |
+| POST | sales/{id}/cancel/ | ADMIN, restore stock once; idempotent |
 
 STAFF reads its own catalog including inactive metadata; ADMIN writes. No automatic
 platform/superuser access, inactive memberships or suspended-org commercial access.
@@ -43,3 +49,8 @@ endpoints: 400 invalid input/JSON, 401 no valid active session, 403 role/state/C
 404 wrong/foreign object or page, 405 unsupported method, 409 uniqueness/state
 conflict, 415 non-JSON write. Unknown URL paths retain Django's ordinary 404 format.
 Unexpected database failures are not hidden. No production security guarantee is made.
+
+The [MVP inventory/sales contract](mvp-inventory-sales.md) defines payloads,
+quantity bounds, snapshots, deterministic locking and cancellation. Prices, totals,
+actor and organization fields are derived on the server. No movement, sale or item
+edit/delete endpoint exists. All list endpoints are paginated.

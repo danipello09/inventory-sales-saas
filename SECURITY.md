@@ -71,9 +71,9 @@ The [approved ADR/TD decisions](docs/adr/README.md) remain the source of archite
 constraints: same-origin session authentication, HttpOnly cookies, CSRF, centralized
 tenant scoping, relational integrity and future isolation tests. Django middleware
 and secure-cookie defaults exist, but the PR #16 slice implements login/memberships and scoped organization metadata.
-The catalog branch adds scoped category/product/variant APIs with PostgreSQL
-relational constraints; inventory/sales authorization and tenant models remain
-unimplemented. Composite FKs do not provide SQL row visibility/RLS. A health response or green CI does
+The MVP branch adds scoped catalog, inventory and sales APIs with PostgreSQL
+relational constraints, atomic stock operations and price snapshots.
+Composite FKs do not provide SQL row visibility/RLS. A health response or green CI does
 not prove tenant isolation, authorization correctness or production security.
 
 Do not disable CSRF, add permissive CORS, wildcard hosts or weaken authentication
