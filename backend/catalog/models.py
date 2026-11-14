@@ -69,6 +69,9 @@ class ProductVariant(CatalogRecord):
 
     class Meta:
         constraints = [
+            models.UniqueConstraint(
+                fields=["id", "organization"], name="catalog_variant_tenant_key"
+            ),
             models.UniqueConstraint(fields=["organization", "sku"], name="catalog_sku_unique"),
             models.UniqueConstraint(
                 fields=["product", "size", "color"], name="catalog_options_unique"
